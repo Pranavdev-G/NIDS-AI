@@ -1,0 +1,58 @@
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model NetworkEvent {
+  id               String   @id @default(cuid())
+  timestamp        DateTime @default(now())
+  source_ip        String
+  destination_ip   String
+  source_port      Int
+  destination_port Int
+  protocol         String
+  packet_size      Int
+  is_threat        Boolean
+  threat_type      String?
+  severity         String
+  pattern_matched  String?
+  description      String
+  status           String
+}
+
+model Alert {
+  id        String   @id @default(cuid())
+  timestamp DateTime @default(now())
+  type      String
+  severity  String
+  source_ip String
+  message   String
+  status    String   @default("detected")
+}
+
+model BlockedIP {
+  id        String   @id @default(cuid())
+  ip        String   @unique
+  reason    String
+  timestamp DateTime @default(now())
+}
+
+model TrafficHistory {
+  id              String   @id @default(cuid())
+  timestamp       DateTime @default(now())
+  packets_per_sec Int
+  threats         Int
+}
+
+model SystemStat {
+  id                 String   @id @default("global")
+  totalPackets       Int      @default(0)
+  threatsDetected    Int      @default(0)
+  connectionsBlocked Int      @default(0)
+  aiAnalyses         Int      @default(0)
+  startTime          DateTime @default(now())
+}
